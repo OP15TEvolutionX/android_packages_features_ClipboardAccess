@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2026 Evolution X; SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="clipboard_access_title">Доступ к буферу обмена</string>
+    <string name="clipboard_access_summary">Настройки доступа приложений к данным буфера обмена</string>
+    <string name="clipboard_access_explanation">Включите, чтобы запретить приложению чтение буфера обмена</string>
+    <string name="clipboard_access_search">Поиск приложений</string>
+    <string name="clipboard_access_clear_search">Очистить поиск</string>
+    <string name="clipboard_access_blocked">Чтение запрещено</string>
+    <string name="clipboard_access_normal">Стандартный доступ Android</string>
+    <string name="clipboard_access_no_apps">Приложения не найдены</string>
+    <string name="clipboard_access_load_error">Не удалось загрузить приложения</string>
+    <string name="clipboard_access_save_error">Не удалось изменить доступ к буферу обмена</string>
+    <string name="clipboard_access_retry">Повторить</string>
+    <string name="clipboard_access_block_app">Запретить чтение буфера обмена для %1$s</string>
+</resources>
