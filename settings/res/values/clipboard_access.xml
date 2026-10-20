@@ -13,4 +13,7 @@
     <string name="clipboard_access_save_error">Could not change clipboard access</string>
     <string name="clipboard_access_retry">Retry</string>
     <string name="clipboard_access_block_app">Block clipboard reading for %1$s</string>
+    <string name="clipboard_access_show_blocked">Show only enabled</string>
+    <string name="clipboard_access_show_all">Show all</string>
+    <string name="clipboard_access_no_blocked_apps">No apps with blocked clipboard reading</string>
 </resources>

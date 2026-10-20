@@ -13,4 +13,7 @@
     <string name="clipboard_access_save_error">Не удалось изменить доступ к буферу обмена</string>
     <string name="clipboard_access_retry">Повторить</string>
     <string name="clipboard_access_block_app">Запретить чтение буфера обмена для %1$s</string>
+    <string name="clipboard_access_show_blocked">Показать только включенные</string>
+    <string name="clipboard_access_show_all">Показать все</string>
+    <string name="clipboard_access_no_blocked_apps">Нет приложений с запрещённым чтением буфера обмена</string>
 </resources>
