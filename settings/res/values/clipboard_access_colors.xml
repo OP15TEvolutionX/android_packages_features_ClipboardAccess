@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2026 Evolution X; SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <color name="clipboard_access_background">@color/settingslib_materialColorSurfaceContainer</color>
+    <color name="clipboard_access_card">@android:color/system_surface_container_high_light</color>
+</resources>
