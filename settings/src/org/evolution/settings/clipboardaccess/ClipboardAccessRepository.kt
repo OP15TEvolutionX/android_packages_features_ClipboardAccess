@@ -14,6 +14,7 @@ internal data class ClipboardApp(
     val blocked: Boolean,
 ) {
     val packageName: String get() = info.packageName
+    val isSystem: Boolean get() = info.flags and ApplicationInfo.FLAG_SYSTEM != 0
 }
 
 /** AppOps owns persistence, user scoping and enforcement in ClipboardService. */
