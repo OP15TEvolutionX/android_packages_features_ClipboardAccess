@@ -12,7 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -28,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -49,6 +51,7 @@ import org.evolution.settings.extrafeatures.ui.AppRowContent
 import org.evolution.settings.extrafeatures.ui.ExtraFeaturesCard
 import org.evolution.settings.extrafeatures.ui.ExtraFeaturesTheme
 import org.evolution.settings.extrafeatures.ui.rememberAppIcon
+import org.evolution.settings.extrafeatures.ui.listItemShape
 
 @Composable
 internal fun ClipboardAccessScreen(refreshVersion: Int) = ExtraFeaturesTheme {
@@ -93,7 +96,7 @@ internal fun ClipboardAccessScreen(refreshVersion: Int) = ExtraFeaturesTheme {
 
     LazyColumn(
         modifier = Modifier.padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         item { AppExplanation(stringResource(R.string.clipboard_access_explanation)) }
         item {
@@ -129,8 +132,8 @@ internal fun ClipboardAccessScreen(refreshVersion: Int) = ExtraFeaturesTheme {
                     R.string.clipboard_access_no_blocked_apps else R.string.clipboard_access_no_apps),
                     modifier = Modifier.padding(24.dp))
             }
-            else -> items(filtered, key = { it.packageName }) { app ->
-                ClipboardAppRow(app, icons, Modifier.animateItem()) { value ->
+            else -> itemsIndexed(filtered, key = { _, it -> it.packageName }) { index, app ->
+                ClipboardAppRow(app, icons, Modifier.animateItem(), listItemShape(index, filtered.size)) { value ->
                     // Update optimistically so only this row recomposes; revert on failure.
                     apps = apps.map {
                         if (it.packageName == app.packageName) it.copy(blocked = value) else it
@@ -161,6 +164,7 @@ private fun ClipboardAppRow(
     app: ClipboardApp,
     icons: MutableMap<String, ImageBitmap?>,
     modifier: Modifier = Modifier,
+    shape: Shape = RoundedCornerShape(4.dp),
     onChange: (Boolean) -> Unit,
 ) {
     val context = LocalContext.current
@@ -168,7 +172,7 @@ private fun ClipboardAppRow(
         app.info.loadIcon(context.packageManager).toBitmap(96, 96).asImageBitmap()
     }
     val description = stringResource(R.string.clipboard_access_block_app, app.label)
-    ExtraFeaturesCard(modifier) {
+    ExtraFeaturesCard(modifier, shape) {
         AppRowContent(
             icon = icon,
             label = app.label,
