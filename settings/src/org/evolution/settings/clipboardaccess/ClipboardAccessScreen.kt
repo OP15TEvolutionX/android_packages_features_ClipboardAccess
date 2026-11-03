@@ -135,7 +135,7 @@ internal fun ClipboardAccessScreen(refreshVersion: Int) = ExtraFeaturesTheme {
                     textAlign = TextAlign.Center)
             }
             else -> itemsIndexed(filtered, key = { _, it -> it.packageName }) { index, app ->
-                ClipboardAppRow(app, icons, Modifier.animateItem(), listItemShape(index, filtered.size)) { value ->
+                ClipboardAppRow(app, icons, Modifier.animateItem(placementSpec = null), listItemShape(index, filtered.size)) { value ->
                     // Update optimistically so only this row recomposes; revert on failure.
                     apps = apps.map {
                         if (it.packageName == app.packageName) it.copy(blocked = value) else it
