@@ -37,6 +37,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.style.TextAlign
 import androidx.core.graphics.drawable.toBitmap
 import com.android.settings.R
 import kotlinx.coroutines.CancellationException
@@ -130,7 +131,8 @@ internal fun ClipboardAccessScreen(refreshVersion: Int) = ExtraFeaturesTheme {
             filtered.isEmpty() -> item {
                 Text(stringResource(if (onlySelected && query.isBlank())
                     R.string.clipboard_access_no_blocked_apps else R.string.clipboard_access_no_apps),
-                    modifier = Modifier.padding(24.dp))
+                    modifier = Modifier.fillMaxWidth().padding(24.dp),
+                    textAlign = TextAlign.Center)
             }
             else -> itemsIndexed(filtered, key = { _, it -> it.packageName }) { index, app ->
                 ClipboardAppRow(app, icons, Modifier.animateItem(), listItemShape(index, filtered.size)) { value ->
