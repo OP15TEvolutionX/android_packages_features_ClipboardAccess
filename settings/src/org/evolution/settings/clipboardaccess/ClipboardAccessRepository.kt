@@ -6,6 +6,8 @@ package org.evolution.settings.clipboardaccess
 import android.app.AppOpsManager
 import android.content.Context
 import android.content.pm.ApplicationInfo
+import android.os.Process
+import android.os.UserHandle
 import java.text.Collator
 
 internal data class ClipboardApp(
@@ -25,6 +27,11 @@ internal class ClipboardAccessRepository(context: Context) {
     fun loadApps(): List<ClipboardApp> {
         val collator = Collator.getInstance()
         return packageManager.getInstalledApplications(0)
+            // AppOps always allows root and system, so a block could never apply.
+            .filter { UserHandle.getAppId(it.uid) != Process.ROOT_UID &&
+                UserHandle.getAppId(it.uid) != Process.SYSTEM_UID }
+            // Overlays and other resource-only packages run no code, so they can't read it.
+            .filter { it.flags and ApplicationInfo.FLAG_HAS_CODE != 0 && !it.isResourceOverlay }
             .map { info ->
                 ClipboardApp(info, info.loadLabel(packageManager).toString(), isBlocked(info))
             }
