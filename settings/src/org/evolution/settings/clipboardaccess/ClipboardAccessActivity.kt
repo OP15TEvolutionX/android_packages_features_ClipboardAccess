@@ -17,7 +17,9 @@ import com.android.settings.R
 import com.android.settingslib.collapsingtoolbar.CollapsingToolbarBaseActivity
 import com.android.settingslib.widget.SettingsThemeHelper
 
+/** Hosts [ClipboardAccessScreen] and reloads it when apps are installed or removed. */
 class ClipboardAccessActivity : CollapsingToolbarBaseActivity() {
+    /** Bumped to make the screen reload the app list. */
     private var refreshVersion by mutableIntStateOf(0)
     private val packageReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {

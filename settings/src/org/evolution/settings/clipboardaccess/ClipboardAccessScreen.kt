@@ -54,6 +54,10 @@ import org.evolution.settings.extrafeatures.ui.ExtraFeaturesTheme
 import org.evolution.settings.extrafeatures.ui.rememberAppIcon
 import org.evolution.settings.extrafeatures.ui.listItemShape
 
+/**
+ * App list with search and filters; checking an app blocks its clipboard reading. Reloads
+ * whenever [refreshVersion] changes.
+ */
 @Composable
 internal fun ClipboardAccessScreen(refreshVersion: Int) = ExtraFeaturesTheme {
     val context = LocalContext.current
@@ -69,6 +73,7 @@ internal fun ClipboardAccessScreen(refreshVersion: Int) = ExtraFeaturesTheme {
     var retryVersion by remember { mutableStateOf(0) }
     // Serializes writes and keeps reloads from racing saves.
     val saveMutex = remember { Mutex() }
+    // Icons by package, kept across reloads.
     val icons = remember { HashMap<String, ImageBitmap?>() }
 
     LaunchedEffect(repository, refreshVersion, retryVersion) {
@@ -129,13 +134,25 @@ internal fun ClipboardAccessScreen(refreshVersion: Int) = ExtraFeaturesTheme {
                 }
             }
             filtered.isEmpty() -> item {
-                Text(stringResource(if (onlySelected && query.isBlank())
-                    R.string.clipboard_access_no_blocked_apps else R.string.clipboard_access_no_apps),
+                val empty = if (onlySelected && query.isBlank()) {
+                    R.string.clipboard_access_no_blocked_apps
+                } else {
+                    R.string.clipboard_access_no_apps
+                }
+                Text(
+                    stringResource(empty),
                     modifier = Modifier.fillMaxWidth().padding(24.dp),
-                    textAlign = TextAlign.Center)
+                    textAlign = TextAlign.Center,
+                )
             }
             else -> itemsIndexed(filtered, key = { _, it -> it.packageName }) { index, app ->
-                ClipboardAppRow(app, icons, Modifier.animateItem(placementSpec = null), listItemShape(index, filtered.size)) { value ->
+                ClipboardAppRow(
+                    app,
+                    icons,
+                    // No placement animation, so rows don't slide when the filters change.
+                    Modifier.animateItem(placementSpec = null),
+                    listItemShape(index, filtered.size),
+                ) { value ->
                     // Update optimistically so only this row recomposes; revert on failure.
                     apps = apps.map {
                         if (it.packageName == app.packageName) it.copy(blocked = value) else it
@@ -149,7 +166,11 @@ internal fun ClipboardAccessScreen(refreshVersion: Int) = ExtraFeaturesTheme {
                             if (e is CancellationException) throw e
                             Log.e("ClipboardAccess", "Could not save app state", e)
                             apps = apps.map {
-                                if (it.packageName == app.packageName) it.copy(blocked = app.blocked) else it
+                                if (it.packageName == app.packageName) {
+                                    it.copy(blocked = app.blocked)
+                                } else {
+                                    it
+                                }
                             }
                             Toast.makeText(context, R.string.clipboard_access_save_error,
                                 Toast.LENGTH_LONG).show()
@@ -161,6 +182,7 @@ internal fun ClipboardAccessScreen(refreshVersion: Int) = ExtraFeaturesTheme {
     }
 }
 
+/** One app: icon, label, package name and a checkbox; the whole row toggles. */
 @Composable
 private fun ClipboardAppRow(
     app: ClipboardApp,

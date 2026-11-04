@@ -10,6 +10,7 @@ import android.os.Process
 import android.os.UserHandle
 import java.text.Collator
 
+/** One installed app and whether it may read the clipboard. */
 internal data class ClipboardApp(
     val info: ApplicationInfo,
     val label: String,
@@ -19,17 +20,23 @@ internal data class ClipboardApp(
     val isSystem: Boolean get() = info.flags and ApplicationInfo.FLAG_SYSTEM != 0
 }
 
-/** AppOps owns persistence, user scoping and enforcement in ClipboardService. */
+/**
+ * Reads and writes the READ_CLIPBOARD app op. AppOps stores the mode per user and
+ * ClipboardService checks it, returning no clip to a blocked app; writing stays allowed.
+ */
 internal class ClipboardAccessRepository(context: Context) {
     private val packageManager = context.packageManager
     private val appOps = context.getSystemService(AppOpsManager::class.java)!!
 
+    /** Apps a block can apply to, sorted by label. Call off the main thread. */
     fun loadApps(): List<ClipboardApp> {
         val collator = Collator.getInstance()
         return packageManager.getInstalledApplications(0)
             // AppOps always allows root and system, so a block could never apply.
-            .filter { UserHandle.getAppId(it.uid) != Process.ROOT_UID &&
-                UserHandle.getAppId(it.uid) != Process.SYSTEM_UID }
+            .filter {
+                val appId = UserHandle.getAppId(it.uid)
+                appId != Process.ROOT_UID && appId != Process.SYSTEM_UID
+            }
             // Overlays and other resource-only packages run no code, so they can't read it.
             .filter { it.flags and ApplicationInfo.FLAG_HAS_CODE != 0 && !it.isResourceOverlay }
             .map { info ->
@@ -41,6 +48,7 @@ internal class ClipboardAccessRepository(context: Context) {
             }
     }
 
+    /** Sets the op and reads it back; throws if the new mode didn't take effect. */
     fun setBlocked(app: ClipboardApp, blocked: Boolean): ClipboardApp {
         // Reject stale rows after uninstall/reinstall rather than changing a reused UID.
         val current = packageManager.getApplicationInfo(app.packageName, 0)
@@ -57,6 +65,7 @@ internal class ClipboardAccessRepository(context: Context) {
         return app.copy(info = current, blocked = actual)
     }
 
+    /** The package's own mode, ignoring the default; IGNORED and ERRORED both deny reading. */
     private fun isBlocked(info: ApplicationInfo): Boolean {
         val mode = appOps.unsafeCheckOpRawNoThrow(
             AppOpsManager.OP_READ_CLIPBOARD, info.uid, info.packageName,
