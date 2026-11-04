@@ -1,0 +1,14 @@
+// Copyright (C) 2026 Evolution X
+// SPDX-License-Identifier: Apache-2.0
+
+// Test app that reads and writes the clipboard for tests/device_test.sh. Not part of the ROM.
+android_test_helper_app {
+    name: "ClipReader",
+    srcs: ["src/**/*.java"],
+    manifest: "AndroidManifest.xml",
+    sdk_version: "current",
+    min_sdk_version: "31",
+    optimize: {
+        enabled: false,
+    },
+}
