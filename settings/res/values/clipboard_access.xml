@@ -2,6 +2,7 @@
 <!-- Copyright (C) 2026 Evolution X; SPDX-License-Identifier: Apache-2.0 -->
 <resources>
     <string name="clipboard_access_title">Clipboard access</string>
+    <string name="clipboard_access_summary">Manage app access to clipboard data</string>
     <string name="clipboard_access_explanation">Turn on to prevent an app from reading the clipboard</string>
     <string name="clipboard_access_no_apps">No apps found</string>
     <string name="clipboard_access_load_error">Could not load apps</string>
